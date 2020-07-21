@@ -16,6 +16,9 @@ window.onload = function() {
   canvas.addEventListener('mousedown', function(event) {
     scene.mouseClick(event);
   });
+  canvas.addEventListener('mouseup', function(event) {
+    scene.mouseClick(event);
+  });
   canvas.addEventListener('mousemove', function(event) {
     scene.mouseMove(event);
   });
@@ -23,7 +26,7 @@ window.onload = function() {
     event.preventDefault();
   });
 
-  scene.mouseClick = scene.addPoint;
+  scene.mouseClick = scene.editLine;
   scene.mouseMove = scene.cursorShadow;
 
   scene.redraw(new Rectangle(0, 0, this.canvas.width, this.canvas.height), []);

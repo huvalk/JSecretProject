@@ -14,6 +14,8 @@ class GraphicScene {
     this.gridSize = 15;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
+    this.lineBegins = false;
+    this.tempPoint = null;
 
     this.items.set(this.zOffset, []);
     this.cursorPoint.invisable();
@@ -26,14 +28,35 @@ class GraphicScene {
     return new Point(x, y);
   }
 
-  addPoint(event) {
+  addLine(pos, type) {
+    if (type === "mousedown") {
+      this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
+      this.items.get(this.zOffset).push(this.tempPoint);
+      this.tempPoint.redraw(this.ctx);
+
+      this.lineBegins = true;
+    } else if (type === "mouseup") {
+      if (this.lineBegins) {
+        let nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
+        this.items.get(this.zOffset).push(nPoint);
+
+        this.lineBegins = false;
+        let nLine = new GraphicLine(this.tempPoint, nPoint);
+        this.items.get(this.zOffset).push(nLine);
+        this.tempPoint = null;
+        nLine.redraw(this.ctx);
+      }
+    }
+
+  }
+
+  editLine(event) {
     let pos = this.cursorPoint.pos();
+    let type = event.type;
     let button = event.button;
 
     if (button === 0) {
-      let nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-      this.items.get(this.zOffset).push(nPoint);
-      nPoint.redraw(this.ctx);
+      this.addLine(pos, type);
     } else if (button === 2) {
       let currentFloor = this.items.get(this.zOffset);
 
@@ -52,12 +75,39 @@ class GraphicScene {
   cursorShadow(event) {
     //TODO Доработать или убрать
     let pos = this.getMousePosition(event);
+    let currentFloor = this.items.get(this.zOffset);
     let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
     let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
+
+    for (let i = 0; i < currentFloor.length;  i++) {
+      if ((currentFloor[i].type === "GraphicLine") &&
+          currentFloor[i].pointInArea(pos.x, pos.y, this.gridSize)) {
+        //TODO pointInArea должа делать boundingrect с погрешностью
+        //TODO искать расстояние до ближайшей доступной точки
+        // Если узел соседствует с пересечение, он игнорируется
+        // http://algolist.ru/maths/geom/distance/pointline.php - 1
+        // http://grafika.me/node/981 - 2
+        let offX = currentFloor[i].getXByY(startY);
+        let offY = currentFloor[i].getYByX(startX);
+
+        if (Math.abs(offX - pos.x) <= Math.abs(offY - pos.y)) {
+          startX = currentFloor[i].getXByY(startY);
+        } else {
+          startY = currentFloor[i].getYByX(startX);
+        }
+        let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
+
+        this.cursorPoint.drag(startX, startY);
+        this.redraw(changesArea, this.items.get(this.zOffset));
+        this.cursorPoint.redraw(this.ctx);
+        return
+      }
+    }
 
     if (!this.cursorPoint.wasClicked(startX, startY)) {
       let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
 
+      console.log("to node");
       this.cursorPoint.drag(startX, startY);
       this.redraw(changesArea, this.items.get(this.zOffset));
       this.cursorPoint.redraw(this.ctx);
@@ -73,6 +123,8 @@ class GraphicScene {
 
 
     // Отрисовать центральный
+    //TODO сначала отрисовывать линии
+    //TODO Добавить признак, что объект был отрисован?
     for (let i = 0; i < currentFloor.length; i++) {
       if (currentFloor[i].redrawRequest(changesArea)) {
         currentFloor[i].redraw(this.ctx);

@@ -5,4 +5,9 @@ class Point {
     this.x = nx;
     this.y = ny;
   }
+
+  move(nx, ny) {
+    this.x = nx;
+    this.y = ny;
+  }
 }

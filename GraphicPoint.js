@@ -1,44 +1,23 @@
 'use strict'
 
-class GraphicPoint {
+class GraphicPoint extends GraphicItem {
   constructor(nx, ny, nradius) {
+    super();
     this.x = nx;
     this.y = ny;
     this.radius = nradius;
     this.border = 1;
     this.visable = true;
+    this.type = "GraphicPoint";
+
     this.boundingRect = new Rectangle(this.x - this.border - this.radius,
       this.y - this.border - this.radius,
       2 * (this.border + this.radius),
       2 * (this.border + this.radius));
   }
 
-  boundingRect() {
-    return this.boundingRect;
-  }
-
-  invisable() {
-    this.visable = false;
-  }
-
-  visable() {
-    this.visable = true;
-  }
-
   pos() {
     return new Point(this.x, this.y);
-  }
-
-  redrawRequest(changesArea) {
-    if (changesArea instanceof Rectangle) {
-      //TODO не работает, если углы не попадают внутрь зоны изменений. Переписать
-      return (this.visable && !((this.boundingRect.x1 < changesArea.x1 && this.boundingRect.x2 < changesArea.x1) ||
-              (this.boundingRect.x1 > changesArea.x2 && this.boundingRect.x2 > changesArea.x2) ||
-              (this.boundingRect.y1 < changesArea.y1 && this.boundingRect.y2 < changesArea.y1) ||
-              (this.boundingRect.y1 > changesArea.y2 && this.boundingRect.y2 > changesArea.y2)));
-    }
-
-    return false;
   }
 
   wasClicked(x, y) {
