@@ -16,26 +16,37 @@ class GraphicLine extends GraphicItem {
   }
 
   pointInArea(x, y, accuracy = this.width) {
-    if ( this.boundingRect.pointInRect(x, y) ) {
-      //TODO Можно оптимизировать
-      // Линейная зависимости p от координаты клика
-      // было width / 2
-      let pxLow = (x - accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
-      let pxHigh = (x + accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
-
-      //TODO погрешность по горизонтали и вертикали
-      let py = (y - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
-      if (py >= 0 && py <= 1) {
-        if (pxHigh < pxLow) {
-          [pxHigh, pxLow] = [pxLow, pxHigh];
-          if (py <= pxHigh && py >= pxLow) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
+    return this.boundingRect.pointInRect(x, y, accuracy);
+    // if ( this.boundingRect.pointInRect(x, y, accuracy) ) {
+    //   //TODO Можно оптимизировать
+    //   //TODO заменить на формулу расстояния?
+    //   let pxLow = (x - accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
+    //   let pxHigh = (x + accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
+    //   let py = (y - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
+    //
+    //   if (py >= 0 && py <= 1) {
+    //     if (pxHigh < pxLow) {
+    //       [pxHigh, pxLow] = [pxLow, pxHigh];
+    //       if (py <= pxHigh && py >= pxLow) {
+    //         return true;
+    //       }
+    //     }
+    //   }
+    //
+    //   let pyLow = (y - accuracy - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
+    //   let pyHigh = (y + accuracy - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
+    //   let px = (x - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
+    //
+    //   if (px >= 0 && px <= 1) {
+    //     if (pyHigh < pyLow) {
+    //       [pyHigh, pyLow] = [pyLow, pyHigh];
+    //       if (px <= pyHigh && px >= pyLow) {
+    //         return true;
+    //       }
+    //     }
+    //   }
+    //   return false;
+    // }
   }
 
   // drag(nx, ny) {

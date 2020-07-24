@@ -25,6 +25,16 @@ window.onload = function() {
   canvas.addEventListener('contextmenu', function(event) {
     event.preventDefault();
   });
+  document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey) {
+      scene.mouseMove = scene.lineAttachment;
+    }
+  });
+  document.addEventListener('keyup', function(event) {
+    if (event.ctrlKey) {
+      scene.mouseMove = scene.cursorShadow;
+    }
+  });
 
   scene.mouseClick = scene.editLine;
   scene.mouseMove = scene.cursorShadow;

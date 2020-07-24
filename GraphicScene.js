@@ -11,7 +11,7 @@ class GraphicScene {
     this.zOffset = 0;
     this.scale = 1;
     this.pointSize = 5
-    this.gridSize = 15;
+    this.gridSize = 100;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
     this.lineBegins = false;
@@ -75,42 +75,49 @@ class GraphicScene {
   cursorShadow(event) {
     //TODO Доработать или убрать
     let pos = this.getMousePosition(event);
+    let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
+    let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
+
+    if (!this.cursorPoint.wasClicked(startX, startY)) {
+      let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
+
+      this.cursorPoint.drag(startX, startY);
+      this.redraw(changesArea, this.items.get(this.zOffset));
+      this.cursorPoint.redraw(this.ctx);
+    }
+  }
+
+  lineAttachment(event) {
+    //TODO искать минимальное расстояние среди всех точек
+    let pos = this.getMousePosition(event);
     let currentFloor = this.items.get(this.zOffset);
     let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
     let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
 
     for (let i = 0; i < currentFloor.length;  i++) {
       if ((currentFloor[i].type === "GraphicLine") &&
-          currentFloor[i].pointInArea(pos.x, pos.y, this.gridSize)) {
+          currentFloor[i].pointInArea(pos.x, pos.y, 0)) {
         //TODO pointInArea должа делать boundingrect с погрешностью
         //TODO искать расстояние до ближайшей доступной точки
         // Если узел соседствует с пересечение, он игнорируется
         // http://algolist.ru/maths/geom/distance/pointline.php - 1
         // http://grafika.me/node/981 - 2
-        let offX = currentFloor[i].getXByY(startY);
-        let offY = currentFloor[i].getYByX(startX);
+        let crossX = currentFloor[i].getXByY(startY);
+        let crossY = currentFloor[i].getYByX(startX);
+        let offCrossX = crossX - pos.x;
+        let offCrossY = crossY - pos.y;
 
-        if (Math.abs(offX - pos.x) <= Math.abs(offY - pos.y)) {
-          startX = currentFloor[i].getXByY(startY);
+        if (Math.abs(offCrossX) <= Math.abs(offCrossY)) {
+          startX = crossX;
         } else {
-          startY = currentFloor[i].getYByX(startX);
+          startY = crossY;
         }
         let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
 
         this.cursorPoint.drag(startX, startY);
         this.redraw(changesArea, this.items.get(this.zOffset));
         this.cursorPoint.redraw(this.ctx);
-        return
       }
-    }
-
-    if (!this.cursorPoint.wasClicked(startX, startY)) {
-      let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
-
-      console.log("to node");
-      this.cursorPoint.drag(startX, startY);
-      this.redraw(changesArea, this.items.get(this.zOffset));
-      this.cursorPoint.redraw(this.ctx);
     }
   }
 

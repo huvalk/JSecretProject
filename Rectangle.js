@@ -19,11 +19,11 @@ class Rectangle {
     }
   }
 
-  pointInRect(x, y) {
-    let result = ((x <= this.x1  && x >= this.x2) ||
-    (x <= this.x2  && x >= this.x1)) &&
-    ((y <= this.y1  && y >= this.y2) ||
-    (y <= this.y2  && y >= this.y1));
+  pointInRect(x, y, accuracy = 0) {
+    let result = ((x <= this.x1 + accuracy && x >= this.x2 - accuracy) ||
+    (x <= this.x2 + accuracy  && x >= this.x1 - accuracy)) &&
+    ((y <= this.y1 + accuracy  && y >= this.y2 - accuracy) ||
+    (y <= this.y2 + accuracy  && y >= this.y1 - accuracy));
     return result;
   }
 
