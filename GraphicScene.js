@@ -11,13 +11,13 @@ class GraphicScene {
     this.zOffset = 0;
     this.scale = 1;
     this.pointSize = 5
-    this.gridSize = 100;
+    this.gridSize = 15;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
     this.lineBegins = false;
     this.tempPoint = null;
 
-    this.items.set(this.zOffset, []);
+    this.items.set(this.zOffset, [[], []]);
     this.cursorPoint.invisable();
   }
 
@@ -31,18 +31,18 @@ class GraphicScene {
   addLine(pos, type) {
     if (type === "mousedown") {
       this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-      this.items.get(this.zOffset).push(this.tempPoint);
+      this.items.get(this.zOffset)[0].push(this.tempPoint);
       this.tempPoint.redraw(this.ctx);
 
       this.lineBegins = true;
     } else if (type === "mouseup") {
       if (this.lineBegins) {
         let nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-        this.items.get(this.zOffset).push(nPoint);
+        this.items.get(this.zOffset)[0].push(nPoint);
 
         this.lineBegins = false;
         let nLine = new GraphicLine(this.tempPoint, nPoint);
-        this.items.get(this.zOffset).push(nLine);
+        this.items.get(this.zOffset)[1].push(nLine);
         this.tempPoint = null;
         nLine.redraw(this.ctx);
       }
@@ -58,7 +58,7 @@ class GraphicScene {
     if (button === 0) {
       this.addLine(pos, type);
     } else if (button === 2) {
-      let currentFloor = this.items.get(this.zOffset);
+      let currentFloor = this.items.get(this.zOffset)[0];
 
       for (let i = currentFloor.length - 1; i >= 0; i--) {
         if ( currentFloor[i].wasClicked(pos.x, pos.y) ) {
@@ -90,7 +90,7 @@ class GraphicScene {
   lineAttachment(event) {
     //TODO искать минимальное расстояние среди всех точек
     let pos = this.getMousePosition(event);
-    let currentFloor = this.items.get(this.zOffset);
+    let currentFloor = this.items.get(this.zOffset)[1];
     let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
     let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
     let newX = startX;
@@ -98,8 +98,8 @@ class GraphicScene {
     let minDistance = Number.MAX_SAFE_INTEGER;
 
     for (let i = 0; i < currentFloor.length;  i++) {
-      if ((currentFloor[i].type === "GraphicLine") &&
-          currentFloor[i].pointInArea(pos.x, pos.y, 0)) {
+      // if ((currentFloor[i].type === "GraphicLine") &&
+        if (currentFloor[i].pointInArea(pos.x, pos.y, 0)) {
         let pointCrossX = currentFloor[i].getXByY(startY);
         let pointCrossY = currentFloor[i].getYByX(startX);
         let distanceCrossX = pos.distanceTo(pointCrossX);
@@ -133,17 +133,24 @@ class GraphicScene {
     //TODO Перенести на задний слой
     this.drawGrid(changesArea);
 
-
     // Отрисовать центральный
     //TODO сначала отрисовывать линии
     //TODO Добавить признак, что объект был отрисован?
-    for (let i = 0; i < currentFloor.length; i++) {
-      if (currentFloor[i].redrawRequest(changesArea)) {
-        currentFloor[i].redraw(this.ctx);
+    let redrawnArea = new Rectangle();
+    for (let i = 0; i < currentFloor[1].length; i++) {
+      console.log(redrawnArea)
+      if (currentFloor[1][i].redrawRequest(changesArea)) {
+        redrawnArea.expand(currentFloor[1][i].boundingRect);
+        currentFloor[1][i].redraw(this.ctx);
       }
     }
 
-    // отрисовать цетральный слой
+    // отрисовать верхний слой
+    for (let i = 0; i < currentFloor[0].length; i++) {
+      if (currentFloor[0][i].redrawRequest(redrawnArea)) {
+        currentFloor[0][i].redraw(this.ctx);
+      }
+    }
   }
 
   //TODO сетка двух размеров - большая и маленькая

@@ -3,6 +3,12 @@
 class Rectangle {
   constructor(nx, ny, nw, nh) {
     //TODO зпдавать точки, а не ширину
+    // if (nx === undefined ||
+    //   ny === undefined ||
+    //   nw === undefined ||
+    //   nh === undefined) {
+    //   this.defined = false;
+    // }
     if (nw >= 0) {
       this.x1 = nx;
       this.x2 = nx + nw;
@@ -32,5 +38,20 @@ class Rectangle {
     this.y2 = ny - this.y1 + this.y2;
     this.x1 = nx;
     this.y1 = ny;
+  }
+
+  expand(nRect) {
+    if (!(nRect.x1 >= this.x1)) {
+      this.x1 = nRect.x1;
+    }
+    if (!(nRect.y1 >= this.y1)) {
+      this.y1 = nRect.y1;
+    }
+    if (!(nRect.x2 <= this.x2)) {
+      this.x2 = nRect.x2;
+    }
+    if (!(nRect.y2 <= this.y2)) {
+      this.y2 = nRect.y2;
+    }
   }
 }
