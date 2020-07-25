@@ -69,12 +69,12 @@ class GraphicLine extends GraphicItem {
   }
 
   getYByX(x) {
-    return ((x - this.firstPoint.x) * (this.firstPoint.y - this.secondPoint.y) /
-            (this.firstPoint.x - this.secondPoint.x) + this.firstPoint.y);
+    return new Point(x, ((x - this.firstPoint.x) * (this.firstPoint.y - this.secondPoint.y) /
+            (this.firstPoint.x - this.secondPoint.x) + this.firstPoint.y));
   }
 
   getXByY(y) {
-    return ((y - this.firstPoint.y) * (this.firstPoint.x - this.secondPoint.x) /
-            (this.firstPoint.y - this.secondPoint.y) + this.firstPoint.x);
+    return new Point(((y - this.firstPoint.y) * (this.firstPoint.x - this.secondPoint.x) /
+            (this.firstPoint.y - this.secondPoint.y) + this.firstPoint.x), y);
   }
 }

@@ -10,4 +10,8 @@ class Point {
     this.x = nx;
     this.y = ny;
   }
+
+  distanceTo(point) {
+    return Math.hypot((point.x - this.x), (point.y - this.y));
+  }
 }

@@ -26,12 +26,12 @@ window.onload = function() {
     event.preventDefault();
   });
   document.addEventListener('keydown', function(event) {
-    if (event.ctrlKey) {
+    if (event.code === "ControlLeft") {
       scene.mouseMove = scene.lineAttachment;
     }
   });
   document.addEventListener('keyup', function(event) {
-    if (event.ctrlKey) {
+    if (event.code === "ControlLeft") {
       scene.mouseMove = scene.cursorShadow;
     }
   });
@@ -49,6 +49,4 @@ window.onload = function() {
   //     nPoint.redraw(scene.ctx);
   //   }
   // }
-
-  console.log(scene.items)
 }
