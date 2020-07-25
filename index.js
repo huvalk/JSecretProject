@@ -39,7 +39,7 @@ window.onload = function() {
   scene.mouseClick = scene.editLine;
   scene.mouseMove = scene.cursorShadow;
 
-  scene.redraw(new Rectangle(0, 0, this.canvas.width, this.canvas.height), []);
+  scene.redraw(new Rectangle(0, 0, this.canvas.width, this.canvas.height), [[], []]);
 
   // Нагрузка
   // for (let i = 0; i < this.canvas.width; i += scene.gridSize) {

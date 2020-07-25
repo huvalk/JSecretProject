@@ -17,7 +17,8 @@ class GraphicScene {
     this.lineBegins = false;
     this.tempPoint = null;
 
-    this.items.set(this.zOffset, [[], []]);
+    this.cursorPoint.free();
+    this.items.set(this.zOffset, [new Set(), new Set()]);
     this.cursorPoint.invisable();
   }
 
@@ -28,26 +29,86 @@ class GraphicScene {
     return new Point(x, y);
   }
 
-  addLine(pos, type) {
+  findPoint(pos) {
+    let currentFloor = this.items.get(this.zOffset);
+
+    for (let item of currentFloor[1]) {
+      // недопускать пересечений точек
+      if (item.wasClicked(pos.x, pos.y)) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  addItem(pos, type) {
     if (type === "mousedown") {
-      this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-      this.items.get(this.zOffset)[0].push(this.tempPoint);
-      this.tempPoint.redraw(this.ctx);
+      this.tempPoint = this.findPoint(pos);
+
+      if (this.tempPoint === null || this.tempPoint.isAttached()) {
+        this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
+        this.items.get(this.zOffset)[1].add(this.tempPoint);
+        this.tempPoint.redraw(this.ctx);
+      }
 
       this.lineBegins = true;
     } else if (type === "mouseup") {
-      if (this.lineBegins) {
-        let nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-        this.items.get(this.zOffset)[0].push(nPoint);
+      if (this.lineBegins && !this.tempPoint.wasClicked(pos.x, pos.y)) {
+        let nPoint = this.findPoint(pos)
+        if (nPoint === null || nPoint.isAttached()) {
+          nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
+          this.items.get(this.zOffset)[1].add(nPoint);
+        }
 
-        this.lineBegins = false;
         let nLine = new GraphicLine(this.tempPoint, nPoint);
-        this.items.get(this.zOffset)[1].push(nLine);
+
+        //TODO проверить
+        this.tempPoint.attach(nLine);
+        nPoint.attach(nLine);
+        this.items.get(this.zOffset)[0].add(nLine);
+        this.lineBegins = false;
         this.tempPoint = null;
         nLine.redraw(this.ctx);
       }
     }
+  }
 
+  deleteItem(pos, type) {
+    if (event.type === "mouseup") {
+      let currentFloor = this.items.get(this.zOffset);
+
+      //TODO заменить на findPoint(pos)
+      for (let item of currentFloor[1]) {
+        // недопускать пересечений точек
+        if ( item.wasClicked(pos.x, pos.y) ) {
+          let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
+          let attachedTo = item.attachedTo();
+
+          currentFloor[1].delete(item);
+          if (attachedTo !== null) {
+            currentFloor[0].delete(attachedTo);
+            attachedTo.freePoints();
+            changesArea.expand(attachedTo.boundingRect);
+          }
+
+          this.redraw(changesArea, currentFloor);
+          return;
+        }
+      }
+
+      for (let item of currentFloor[0]) {
+        if ( item.wasClicked(pos.x, pos.y) ) {
+          console.log(item)
+          let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
+          currentFloor[0].delete(item);
+          item.freePoints();
+
+          this.redraw(changesArea, currentFloor);
+          return;
+        }
+      }
+    }
   }
 
   editLine(event) {
@@ -56,19 +117,9 @@ class GraphicScene {
     let button = event.button;
 
     if (button === 0) {
-      this.addLine(pos, type);
+      this.addItem(pos, type);
     } else if (button === 2) {
-      let currentFloor = this.items.get(this.zOffset)[0];
-
-      for (let i = currentFloor.length - 1; i >= 0; i--) {
-        if ( currentFloor[i].wasClicked(pos.x, pos.y) ) {
-          let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), currentFloor[i].boundingRect);
-          currentFloor.splice(i, 1);
-
-          this.redraw(changesArea, currentFloor);
-          break;
-        }
-      }
+      this.deleteItem(pos, type);
     }
   }
 
@@ -90,18 +141,18 @@ class GraphicScene {
   lineAttachment(event) {
     //TODO искать минимальное расстояние среди всех точек
     let pos = this.getMousePosition(event);
-    let currentFloor = this.items.get(this.zOffset)[1];
+    let currentFloor = this.items.get(this.zOffset)[0];
     let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
     let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
     let newX = startX;
     let newY = startY;
     let minDistance = Number.MAX_SAFE_INTEGER;
 
-    for (let i = 0; i < currentFloor.length;  i++) {
+    for (let item of currentFloor) {
       // if ((currentFloor[i].type === "GraphicLine") &&
-        if (currentFloor[i].pointInArea(pos.x, pos.y, 0)) {
-        let pointCrossX = currentFloor[i].getXByY(startY);
-        let pointCrossY = currentFloor[i].getYByX(startX);
+        if (item.pointInArea(pos.x, pos.y, 0)) {
+        let pointCrossX = item.getXByY(startY);
+        let pointCrossY = item.getYByX(startX);
         let distanceCrossX = pos.distanceTo(pointCrossX);
         let distanceCrossY = pos.distanceTo(pointCrossY);
 
@@ -137,18 +188,18 @@ class GraphicScene {
     //TODO сначала отрисовывать линии
     //TODO Добавить признак, что объект был отрисован?
     let redrawnArea = new Rectangle();
-    for (let i = 0; i < currentFloor[1].length; i++) {
-      console.log(redrawnArea)
-      if (currentFloor[1][i].redrawRequest(changesArea)) {
-        redrawnArea.expand(currentFloor[1][i].boundingRect);
-        currentFloor[1][i].redraw(this.ctx);
+
+    for (let item of currentFloor[0]) {
+      if ( item.redrawRequest(changesArea) ) {
+        redrawnArea.expand(item.boundingRect);
+        item.redraw(this.ctx);
       }
     }
 
     // отрисовать верхний слой
-    for (let i = 0; i < currentFloor[0].length; i++) {
-      if (currentFloor[0][i].redrawRequest(redrawnArea)) {
-        currentFloor[0][i].redraw(this.ctx);
+    for (let item of currentFloor[1]) {
+      if ( item.redrawRequest(redrawnArea) ) {
+        item.redraw(this.ctx);
       }
     }
   }

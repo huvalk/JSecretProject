@@ -9,11 +9,32 @@ class GraphicPoint extends GraphicItem {
     this.border = 1;
     this.visable = true;
     this.type = "GraphicPoint";
+    this.attached = true;
+    //TODO Сделать массив родителей, чтобы одна точка принадлежала многим отрезкам
+    this.parent = null;
 
     this.boundingRect = new Rectangle(this.x - this.border - this.radius,
       this.y - this.border - this.radius,
       2 * (this.border + this.radius),
       2 * (this.border + this.radius));
+  }
+
+  free() {
+    this.parent = null;
+    this.attached = false;
+  }
+
+  attach(nparent) {
+    this.parent = nparent;
+    this.attached = true;
+  }
+
+  attachedTo() {
+    return this.parent;
+  }
+
+  isAttached() {
+    return this.free;
   }
 
   pos() {
@@ -35,8 +56,15 @@ class GraphicPoint extends GraphicItem {
   }
 
   redraw(ctx) {
-    ctx.strokeStyle = "#fc0"
-    ctx.fillStyle = "#fc0";
+    if (this.attached) {
+      ctx.strokeStyle = "#A60000"
+      ctx.fillStyle = "#FF9E00";
+    } else {
+      ctx.strokeStyle = "#000000"
+      ctx.fillStyle = "#38DF64";
+      // ctx.fillStyle = "#FFDF38";
+    }
+
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
