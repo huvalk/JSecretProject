@@ -6,7 +6,7 @@ class GraphicPoint extends GraphicItem {
     this.x = nx;
     this.y = ny;
     this.radius = nradius;
-    this.border = 1;
+    this.border = 2;
     this.visable = true;
     this.type = "GraphicPoint";
     this.attached = false;
@@ -65,7 +65,7 @@ class GraphicPoint extends GraphicItem {
       // ctx.fillStyle = "#FFDF38";
     }
 
-    ctx.lineWidth = 1;
+    ctx.lineWidth = this.border;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
     ctx.closePath();

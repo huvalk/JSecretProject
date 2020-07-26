@@ -178,7 +178,7 @@ class GraphicScene {
 
   redraw(changesArea, currentFloor) {
     this.ctx.clearRect(changesArea.x1, changesArea.y1,
-      changesArea.x2 - changesArea.x1, changesArea.y2 - changesArea.y1)
+      changesArea.x2 - changesArea.x1, changesArea.y2 - changesArea.y1);
     // Отрисовать задний слой
     //TODO Перенести на задний слой
     this.drawGrid(changesArea);
@@ -206,11 +206,11 @@ class GraphicScene {
   //TODO сетка двух размеров - большая и маленькая
   drawGrid(changesArea) {
     //TODO сетка двух размеров - большая и маленькая
-    let startX = Math.ceil(changesArea.x1 / this.gridSize) * this.gridSize
-    let startY = Math.ceil(changesArea.y1 / this.gridSize) * this.gridSize
+    let startX = Math.ceil(changesArea.x1 / this.gridSize) * this.gridSize;
+    let startY = Math.ceil(changesArea.y1 / this.gridSize) * this.gridSize;
 
-    this.ctx.strokeStyle = "#aaa"
-    this.ctx.lineWidth = 0;
+    this.ctx.strokeStyle = "#aaa";
+    this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     for (let i = startY; i < changesArea.y2; i += this.gridSize) {
       this.ctx.moveTo(changesArea.x1, i);
