@@ -99,7 +99,6 @@ class GraphicScene {
 
       for (let item of currentFloor[0]) {
         if ( item.wasClicked(pos.x, pos.y) ) {
-          console.log(item)
           let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
           currentFloor[0].delete(item);
           item.freePoints();

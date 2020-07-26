@@ -1,16 +1,33 @@
 'use strict'
 
-function Enum(values){
-    for( var i = 0; i < values.length; ++i ){
-        this[values[i]] = i;
-    }
-    return this;
-}
-let config = {};
-config.type = new Enum(["RED","GREEN","BLUE"]);
-
 window.onload = function() {
-  let canvas = document.getElementById('canvas');
+  //get DPI
+  var PIXEL_RATIO = (function () {
+      // virtual ctx only for calculation
+      var ctx = document.createElement("canvas").getContext("2d"),
+          dpr = window.devicePixelRatio || 1,
+          bsr = ctx.webkitBackingStorePixelRatio ||
+              ctx.mozBackingStorePixelRatio ||
+              ctx.msBackingStorePixelRatio ||
+              ctx.oBackingStorePixelRatio ||
+              ctx.backingStorePixelRatio || 1;
+      return dpr / bsr;
+  })();
+
+  var createHiDPICanvas = function(quality, w, h, ratio) {
+      var can = document.createElement("canvas");
+      can.id = `can_${quality}`;
+
+      document.body.appendChild(can);
+      if (!ratio) { ratio = PIXEL_RATIO; }
+      can.width = w * ratio;
+      can.height = h * ratio;
+      can.style.width = w + "px";
+      can.style.height = h + "px";
+      can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+      return can;
+  }
+  var canvas = createHiDPICanvas('hd', 1900, 1000, 4);
   let scene = new GraphicScene(canvas);
 
   canvas.addEventListener('mousedown', function(event) {
@@ -39,14 +56,5 @@ window.onload = function() {
   scene.mouseClick = scene.editLine;
   scene.mouseMove = scene.cursorShadow;
 
-  scene.redraw(new Rectangle(0, 0, this.canvas.width, this.canvas.height), [[], []]);
-
-  // Нагрузка
-  // for (let i = 0; i < this.canvas.width; i += scene.gridSize) {
-  //   for (let j = 0; j < this.canvas.height; j += scene.gridSize) {
-  //     let nPoint = new GraphicPoint(i, j, scene.pointSize);
-  //     scene.items.get(scene.zOffset).push(nPoint);
-  //     nPoint.redraw(scene.ctx);
-  //   }
-  // }
+  scene.redraw(new Rectangle(0, 0, canvas.width, canvas.height), [[], []]);
 }

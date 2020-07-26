@@ -9,7 +9,7 @@ class GraphicPoint extends GraphicItem {
     this.border = 1;
     this.visable = true;
     this.type = "GraphicPoint";
-    this.attached = true;
+    this.attached = false;
     //TODO Сделать массив родителей, чтобы одна точка принадлежала многим отрезкам
     this.parent = null;
 
