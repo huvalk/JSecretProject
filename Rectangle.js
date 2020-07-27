@@ -1,7 +1,7 @@
 'use strict'
 
 class Rectangle {
-  constructor(nx, ny, nw, nh) {
+  constructor(nx, ny, nw, nh, accuracy = 0) {
     //TODO зпдавать точки, а не ширину
     // if (nx === undefined ||
     //   ny === undefined ||
@@ -10,18 +10,18 @@ class Rectangle {
     //   this.defined = false;
     // }
     if (nw >= 0) {
-      this.x1 = nx;
-      this.x2 = nx + nw;
+      this.x1 = nx - accuracy;
+      this.x2 = nx + nw + accuracy;
     } else {
-      this.x1 = nx + nw;
-      this.x2 = nx;
+      this.x1 = nx + nw - accuracy;
+      this.x2 = nx + accuracy;
     }
     if (nh >= 0) {
-      this.y1 = ny;
-      this.y2 = ny + nh;
+      this.y1 = ny - accuracy;
+      this.y2 = ny + nh + accuracy;
     } else {
-      this.y1 = ny + nh;
-      this.y2 = ny;
+      this.y1 = ny + nh - accuracy;
+      this.y2 = ny + accuracy;
     }
   }
 

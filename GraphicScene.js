@@ -17,7 +17,6 @@ class GraphicScene {
     this.lineBegins = false;
     this.tempPoint = null;
 
-    this.cursorPoint.free();
     this.items.set(this.zOffset, [new Set(), new Set()]);
     this.cursorPoint.invisable();
   }
@@ -201,6 +200,8 @@ class GraphicScene {
         item.redraw(this.ctx);
       }
     }
+
+    this.cursorPoint.redraw(this.ctx);
   }
 
   //TODO сетка двух размеров - большая и маленькая
