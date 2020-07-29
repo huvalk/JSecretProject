@@ -2,9 +2,9 @@
 
 window.onload = function() {
   //get DPI
-  var PIXEL_RATIO = (function () {
+  let PIXEL_RATIO = (function () {
       // virtual ctx only for calculation
-      var ctx = document.createElement("canvas").getContext("2d"),
+      let ctx = document.createElement("canvas").getContext("2d"),
           dpr = window.devicePixelRatio || 1,
           bsr = ctx.webkitBackingStorePixelRatio ||
               ctx.mozBackingStorePixelRatio ||
@@ -14,8 +14,8 @@ window.onload = function() {
       return dpr / bsr;
   })();
 
-  var createHiDPICanvas = function(quality, w, h, ratio) {
-      var can = document.createElement("canvas");
+  let createHiDPICanvas = function(quality, w, h, ratio) {
+      let can = document.createElement("canvas");
       can.id = `can_${quality}`;
 
       document.body.appendChild(can);
@@ -27,7 +27,7 @@ window.onload = function() {
       can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
       return can;
   }
-  var canvas = createHiDPICanvas('hd', 1900, 1000, 4);
+  let canvas = createHiDPICanvas('hd', 1900, 900, 2);
   let scene = new GraphicScene(canvas);
 
   canvas.addEventListener('mousedown', function(event) {
@@ -56,5 +56,17 @@ window.onload = function() {
   scene.mouseClick = scene.editLine;
   scene.mouseMove = scene.cursorShadow;
 
-  scene.redraw(new Rectangle(0, 0, canvas.width, canvas.height), [[], []]);
+  // Нагрузка
+  for (let i = 0; i < 1900; i += 30) {
+    for (let j = 0; j < 900; j += 30) {
+      let fPoint = new GraphicPoint(i, j, 5);
+      let sPoint = new GraphicPoint(i + 15, j + 15, 5);
+      scene.items.get(scene.zOffset)[1].add(fPoint);
+      scene.items.get(scene.zOffset)[1].add(sPoint);
+      let nLine = new GraphicLine(fPoint, sPoint);
+      scene.items.get(scene.zOffset)[0].add(nLine);
+    }
+  }
+
+  scene.redraw(new Rectangle(0, 0, 1900, 900), [[],[]]);
 }

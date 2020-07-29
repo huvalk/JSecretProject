@@ -86,12 +86,12 @@ class GraphicLine extends GraphicItem {
   //     this.y - this.border - this.radius);
   // }
 
-  redraw(ctx) {
+  redraw(ctx, offset = new Point(0, 0)) {
     ctx.strokeStyle = "#FF4040";
     ctx.lineWidth = this.width;
     ctx.beginPath();
-    ctx.moveTo(this.firstPoint.x, this.firstPoint.y);
-    ctx.lineTo(this.secondPoint.x, this.secondPoint.y);
+    ctx.moveTo(this.firstPoint.x + offset.x, this.firstPoint.y + offset.y);
+    ctx.lineTo(this.secondPoint.x + offset.x, this.secondPoint.y + offset.y);
     ctx.closePath();
     ctx.stroke();
   }

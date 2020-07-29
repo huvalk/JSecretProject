@@ -14,4 +14,20 @@ class Point {
   distanceTo(point) {
     return Math.hypot((point.x - this.x), (point.y - this.y));
   }
+
+  addOffset(offset) {
+    this.x += offset.x;
+    this.y += offset.y;
+    return this;
+  }
+
+  subOffset(offset) {
+    this.x -= offset.x;
+    this.y -= offset.y;
+    return this;
+  }
+
+  minus() {
+    return new Point(-this.x, -this.y);
+  }
 }

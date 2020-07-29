@@ -40,6 +40,13 @@ class Rectangle {
     this.y1 = ny;
   }
 
+  offset(xOffset, yOffset) {
+    this.x2 += xOffset;
+    this.y2 += yOffset;
+    this.x1 += xOffset;
+    this.y1 += yOffset;
+  }
+
   expand(nRect) {
     if (!(nRect.x1 >= this.x1)) {
       this.x1 = nRect.x1;
