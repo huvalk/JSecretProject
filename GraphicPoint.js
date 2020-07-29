@@ -57,7 +57,8 @@ class GraphicPoint extends GraphicItem {
       this.y - this.border - this.radius);
   }
 
-  redraw(ctx, offset = new Point(0, 0)) {
+  redraw(ctx, offset) {
+    ctx.lineCap  = 'butt';
     if (this.attached) {
       ctx.strokeStyle = "#A60000"
       ctx.fillStyle = "#FF9E00";
@@ -70,7 +71,6 @@ class GraphicPoint extends GraphicItem {
     ctx.lineWidth = this.border;
     ctx.beginPath();
     ctx.arc(this.x + offset.x, this.y + offset.y, this.radius, 0, Math.PI*2, true);
-    ctx.closePath();
     ctx.stroke();
     ctx.fill();
   }

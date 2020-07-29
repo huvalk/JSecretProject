@@ -86,15 +86,8 @@ class GraphicScene {
         // недопускать пересечений точек
         if ( item.wasClicked(pos.x, pos.y) ) {
           let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
-          let attachedTo = item.attachedTo();
 
           currentFloor[1].delete(item);
-          if (attachedTo !== null) {
-            currentFloor[0].delete(attachedTo);
-            attachedTo.freePoints();
-            changesArea.expand(attachedTo.boundingRect);
-          }
-
           this.redraw(changesArea, currentFloor);
           return;
         }
@@ -103,8 +96,8 @@ class GraphicScene {
       for (let item of currentFloor[0]) {
         if ( item.wasClicked(pos.x, pos.y) ) {
           let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
-          this.items.get(this.zOffset)[1].add( new GraphicPoint(items.firstPoint.x, items.firstPoint.y, this.pointSize) );
-          this.items.get(this.zOffset)[1].add( new GraphicPoint(items.secondPoint.x, items.secondPoint.y, this.pointSize) );
+          this.items.get(this.zOffset)[1].add( new GraphicPoint(item.firstPoint.x, item.firstPoint.y, this.pointSize) );
+          this.items.get(this.zOffset)[1].add( new GraphicPoint(item.secondPoint.x, item.secondPoint.y, this.pointSize) );
           currentFloor[0].delete(item);
 
           this.redraw(changesArea, currentFloor);
