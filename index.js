@@ -57,16 +57,16 @@ window.onload = function() {
   scene.mouseMove = scene.cursorShadow;
 
   // Нагрузка
-  for (let i = 0; i < 1900; i += 30) {
-    for (let j = 0; j < 900; j += 30) {
-      let fPoint = new GraphicPoint(i, j, 5);
-      let sPoint = new GraphicPoint(i + 15, j + 15, 5);
-      scene.items.get(scene.zOffset)[1].add(fPoint);
-      scene.items.get(scene.zOffset)[1].add(sPoint);
-      let nLine = new GraphicLine(fPoint, sPoint);
-      scene.items.get(scene.zOffset)[0].add(nLine);
-    }
-  }
+  // for (let i = 0; i < 1900; i += 30) {
+  //   for (let j = 0; j < 900; j += 30) {
+  //     let fPoint = new GraphicPoint(i, j, 5);
+  //     let sPoint = new GraphicPoint(i + 15, j + 15, 5);
+  //     scene.items.get(scene.zOffset)[1].add(fPoint);
+  //     scene.items.get(scene.zOffset)[1].add(sPoint);
+  //     let nLine = new GraphicLine(fPoint, sPoint);
+  //     scene.items.get(scene.zOffset)[0].add(nLine);
+  //   }
+  // }
 
   scene.redraw(new Rectangle(0, 0, 1900, 900), [[],[]]);
 }

@@ -64,20 +64,15 @@ class GraphicScene {
       this.lineBegins = true;
     } else if (type === "mouseup") {
       if (this.lineBegins && !this.tempPoint.wasClicked(pos.x, pos.y)) {
-        let nPoint = this.findPoint(pos)
-        if (nPoint === null || nPoint.isAttached()) {
-          nPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
-          this.items.get(this.zOffset)[1].add(nPoint);
-        }
-        let nLine = new GraphicLine(this.tempPoint, nPoint);
-
+        let nLine = new GraphicLine(this.tempPoint.pos(), new Point(pos.x, pos.y));
+        let currentFloor = this.items.get(this.zOffset);
         //TODO проверить
-        this.tempPoint.attach(nLine);
-        nPoint.attach(nLine);
-        this.items.get(this.zOffset)[0].add(nLine);
+        currentFloor[1].delete(this.tempPoint);
+        currentFloor[1].delete(this.findPoint(pos));
+        currentFloor[0].add(nLine);
         this.lineBegins = false;
+        this.redraw(this.tempPoint.boundingRect, currentFloor);
         this.tempPoint = null;
-        nLine.redraw(this.ctx, this.offset);
       }
     }
   }
@@ -108,8 +103,9 @@ class GraphicScene {
       for (let item of currentFloor[0]) {
         if ( item.wasClicked(pos.x, pos.y) ) {
           let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), item.boundingRect);
+          this.items.get(this.zOffset)[1].add( new GraphicPoint(items.firstPoint.x, items.firstPoint.y, this.pointSize) );
+          this.items.get(this.zOffset)[1].add( new GraphicPoint(items.secondPoint.x, items.secondPoint.y, this.pointSize) );
           currentFloor[0].delete(item);
-          item.freePoints();
 
           this.redraw(changesArea, currentFloor);
           return;
@@ -240,7 +236,7 @@ class GraphicScene {
     // отрисовать верхний слой
     redrawnArea.expand(changesArea);
     for (let item of currentFloor[1]) {
-      if ( item.redrawRequest(redrawnArea) ) {
+      if (item.redrawRequest(redrawnArea) && !item.attached) {
         item.redraw(this.ctx, this.offset);
       }
     }

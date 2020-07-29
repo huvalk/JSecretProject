@@ -9,7 +9,8 @@ class GraphicPoint extends GraphicItem {
     this.border = 2;
     this.visable = true;
     this.type = "GraphicPoint";
-    this.attached = false;
+    // Убрал, потому что линия больше не содержит точек
+    // this.attached = false;
     //TODO Сделать массив родителей, чтобы одна точка принадлежала многим отрезкам
     this.parent = null;
 
@@ -19,23 +20,24 @@ class GraphicPoint extends GraphicItem {
       2 * (this.border + this.radius));
   }
 
-  free() {
-    this.parent = null;
-    this.attached = false;
-  }
-
-  attach(nparent) {
-    this.parent = nparent;
-    this.attached = true;
-  }
-
-  attachedTo() {
-    return this.parent;
-  }
-
-  isAttached() {
-    return this.free;
-  }
+  // Убрал, потому что линия больше не содержит точек
+  // free() {
+  //   this.parent = null;
+  //   this.attached = false;
+  // }
+  //
+  // attach(nparent) {
+  //   this.parent = nparent;
+  //   this.attached = true;
+  // }
+  //
+  // attachedTo() {
+  //   return this.parent;
+  // }
+  //
+  // isAttached() {
+  //   return this.free;
+  // }
 
   pos() {
     return new Point(this.x, this.y);

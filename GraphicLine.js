@@ -106,8 +106,9 @@ class GraphicLine extends GraphicItem {
             (this.firstPoint.y - this.secondPoint.y) + this.firstPoint.x), y);
   }
 
-  freePoints() {
-    this.firstPoint.free();
-    this.secondPoint.free();
-  }
+  // Убрал, потому что линия больше не содержит точек
+  // freePoints() {
+  //   this.firstPoint.free();
+  //   this.secondPoint.free();
+  // }
 }
