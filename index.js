@@ -42,11 +42,29 @@ window.onload = function() {
   canvas.addEventListener('contextmenu', function(event) {
     event.preventDefault();
   });
+  canvas.addEventListener('wheel', function(event) {
+    let delta = event.deltaY || event.detail || event.wheelDelta;
+
+    if (delta > 0) {
+      if (scene.scale === 1) {
+        scene.zoomIn(2);
+      } else if (scene.scale === 2) {
+        scene.zoomIn(4);
+      }
+    } else if (delta < 0) {
+      if (scene.scale === 8) {
+        scene.zoomOut(4);
+      } else if (scene.scale === 2) {
+        scene.zoomOut(2);
+      }
+    }
+    console.log(scene.canvasWindow, scene.scale)
+  });
   document.addEventListener('keydown', function(event) {
     if (event.code === "ControlLeft") {
       scene.mouseMove = scene.lineAttachment;
     } else if (event.code === "ShiftLeft") {
-      scene.rescale();
+
     }
   });
   document.addEventListener('keyup', function(event) {
@@ -75,5 +93,5 @@ window.onload = function() {
   //   console.log(count)
   // }
 
-  scene.redraw(new Rectangle(0, 0, 1900 , 900), [[],[]]);
+  scene.redraw(new Rectangle(0, 0, canvas.width , canvas.height), [[],[]]);
 }

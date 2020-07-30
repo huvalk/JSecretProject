@@ -10,32 +10,36 @@ class Rectangle {
     //   this.defined = false;
     // }
     if (nw >= 0) {
+      this.width = nw;
       this.x1 = nx - accuracy;
       this.x2 = nx + nw + accuracy;
     } else {
+      this.width = -nw;
       this.x1 = nx + nw - accuracy;
       this.x2 = nx + accuracy;
     }
     if (nh >= 0) {
+      this.height = nh;
       this.y1 = ny - accuracy;
       this.y2 = ny + nh + accuracy;
     } else {
+      this.height = -nh;
       this.y1 = ny + nh - accuracy;
       this.y2 = ny + accuracy;
     }
   }
 
-  pointInRect(x, y, accuracy = 0) {
-    let result = ((x <= this.x1 + accuracy && x >= this.x2 - accuracy) ||
-    (x <= this.x2 + accuracy  && x >= this.x1 - accuracy)) &&
-    ((y <= this.y1 + accuracy  && y >= this.y2 - accuracy) ||
-    (y <= this.y2 + accuracy  && y >= this.y1 - accuracy));
+  pointInRect(x, y) {
+    let result = ((x <= this.x1 && x >= this.x2) ||
+    (x <= this.x2  && x >= this.x1)) &&
+    ((y <= this.y1  && y >= this.y2) ||
+    (y <= this.y2  && y >= this.y1));
     return result;
   }
 
   move(nx, ny) {
-    this.x2 = nx - this.x1 + this.x2;
-    this.y2 = ny - this.y1 + this.y2;
+    this.x2 = nx + this.width;
+    this.y2 = ny + this.height;
     this.x1 = nx;
     this.y1 = ny;
   }
@@ -47,11 +51,22 @@ class Rectangle {
     this.y1 += yOffset;
   }
 
-  scale(s) {
-    this.x2 *= s;
-    this.y2 *= s;
-    this.x1 *= s;
-    this.y1 *= s;
+  mult(m) {
+    this.x1 *= m;
+    this.y1 *= m;
+    this.width *= m;
+    this.height *= m;
+    this.x2 = this.x1 + this.width;
+    this.y2 = this.y1 + this.height;
+  }
+
+  divide(d) {
+    this.x1 /= d;
+    this.y1 /= d;
+    this.width /= d;
+    this.height /= d;
+    this.x2 = this.x1 + this.width;
+    this.y2 = this.y1 + this.height;
   }
 
   expand(nRect) {
@@ -67,5 +82,7 @@ class Rectangle {
     if (!(nRect.y2 <= this.y2)) {
       this.y2 = nRect.y2;
     }
+    this.width = this.x2 - this.x1;
+    this.height = this.y2 - this.y1;
   }
 }

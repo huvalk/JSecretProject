@@ -16,8 +16,8 @@ class GraphicLine extends GraphicItem {
       this.secondPoint.y - this.firstPoint.y, this.width);
   }
 
-  pointInArea(x, y, accuracy = this.width) {
-    return this.boundingRect.pointInRect(x, y, accuracy);
+  pointInArea(x, y) {
+    return this.boundingRect.pointInRect(x, y);
   }
 
   wasClicked(x, y) {

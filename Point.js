@@ -27,10 +27,6 @@ class Point {
     return this;
   }
 
-  minus() {
-    return new Point(-this.x, -this.y);
-  }
-
   mult(m) {
     this.x *= m;
     this.y *= m;

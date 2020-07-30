@@ -19,7 +19,6 @@ class GraphicItem {
     this.visable = true;
   }
 
-//TODO сделать гетер
   type() {
     return type;
   }
