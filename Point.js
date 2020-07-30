@@ -31,8 +31,13 @@ class Point {
     return new Point(-this.x, -this.y);
   }
 
-  scale(s) {
-    this.x *= s;
-    this.y *= s;
+  mult(m) {
+    this.x *= m;
+    this.y *= m;
+  }
+
+  divide(d) {
+    this.x /= d;
+    this.y /= d;
   }
 }

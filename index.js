@@ -46,9 +46,7 @@ window.onload = function() {
     if (event.code === "ControlLeft") {
       scene.mouseMove = scene.lineAttachment;
     } else if (event.code === "ShiftLeft") {
-      scene.zoomIn();
-    } else if (event.code === "ShiftRight") {
-      scene.zoomOut();
+      scene.rescale();
     }
   });
   document.addEventListener('keyup', function(event) {

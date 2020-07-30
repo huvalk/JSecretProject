@@ -28,18 +28,34 @@ class GraphicScene {
 
   zoomIn() {
     this.scale = 2;
+    this.offset.x -= this.canvasWidth / 4;
+    this.offset.y -= this.canvasHight / 4;
     this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
   }
 
   zoomOut() {
     this.scale = 1;
+    this.offset.x += this.canvasWidth / 4;
+    this.offset.y += this.canvasHight / 4;
+    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+  }
+
+  rescale() {
+    if (this.scale === 1) {
+      this.scale = 2;
+      this.offset.x -= this.canvasWidth / 4;
+      this.offset.y -= this.canvasHight / 4;
+    } else {
+      this.scale = 1;
+      this.offset.x += this.canvasWidth / 4;
+      this.offset.y += this.canvasHight / 4;
+    }
+
     this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
   }
 
   getMousePosition(event) {
     let rect = this.canvas.getBoundingClientRect();
-    // let x = this.scale * (event.clientX - rect.left - this.offset.x);
-    // let y = this.scale * (event.clientY - rect.top - this.offset.y);
     let x = (event.clientX - rect.left - this.offset.x);
     let y = (event.clientY - rect.top - this.offset.y);
     return new Point(x, y);
@@ -163,6 +179,7 @@ class GraphicScene {
 
       if (!this.cursorPoint.wasClicked(startX, startY)) {
         let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
+        console.log(startX, startY)
 
         this.cursorPoint.drag(startX, startY);
         this.redraw(changesArea, this.items.get(this.zOffset));
@@ -172,17 +189,17 @@ class GraphicScene {
 
   lineAttachment(event) {
     //TODO искать минимальное расстояние среди всех точек
-    let pos = this.getMousePosition(event);
     let currentFloor = this.items.get(this.zOffset)[0];
-    let startX = Math.round(pos.x / this.gridSize) * this.gridSize * this.scale;
-    let startY = Math.round(pos.y / this.gridSize) * this.gridSize * this.scale;
+    let pos = this.getMousePosition(event);
+    let startX = Math.round((pos.x) / (this.gridSize * this.scale)) * (this.gridSize);
+    let startY = Math.round((pos.y) / (this.gridSize * this.scale)) * (this.gridSize);
     let newX = startX;
     let newY = startY;
     let minDistance = Number.MAX_SAFE_INTEGER;
 
+    pos.divide(this.scale);
     for (let item of currentFloor) {
-      // if ((currentFloor[i].type === "GraphicLine") &&
-        if (item.pointInArea(pos.x, pos.y, 0)) {
+      if (item.pointInArea(pos.x, pos.y, 0)) {
         let pointCrossX = item.getXByY(startY);
         let pointCrossY = item.getYByX(startX);
         let distanceCrossX = pos.distanceTo(pointCrossX);
@@ -199,6 +216,8 @@ class GraphicScene {
           newY = pointCrossY.y;
           minDistance = distanceCrossY;
         }
+
+
       }
     }
 
@@ -256,10 +275,8 @@ class GraphicScene {
   //TODO сетка двух размеров - большая и маленькая
   drawGrid(changesArea) {
     // TODO round или ceil
-    console.log("Area", changesArea)
     let startX = (Math.round((changesArea.x1 - this.offset.x) / (this.gridSize * this.scale)) * (this.gridSize * this.scale) + this.offset.x);
     let startY = (Math.round((changesArea.y1 - this.offset.y) / (this.gridSize * this.scale)) * (this.gridSize * this.scale) + this.offset.y);
-    console.log("Starts", startX, startY)
 
     this.ctx.strokeStyle = "#aaa";
     this.ctx.lineWidth = 1;
