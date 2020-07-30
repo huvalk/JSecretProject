@@ -30,4 +30,9 @@ class Point {
   minus() {
     return new Point(-this.x, -this.y);
   }
+
+  scale(s) {
+    this.x *= s;
+    this.y *= s;
+  }
 }

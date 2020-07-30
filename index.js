@@ -45,6 +45,10 @@ window.onload = function() {
   document.addEventListener('keydown', function(event) {
     if (event.code === "ControlLeft") {
       scene.mouseMove = scene.lineAttachment;
+    } else if (event.code === "ShiftLeft") {
+      scene.zoomIn();
+    } else if (event.code === "ShiftRight") {
+      scene.zoomOut();
     }
   });
   document.addEventListener('keyup', function(event) {
@@ -73,5 +77,5 @@ window.onload = function() {
   //   console.log(count)
   // }
 
-  scene.redraw(new Rectangle(0, 0, 1900, 900), [[],[]]);
+  scene.redraw(new Rectangle(0, 0, 1900 , 900), [[],[]]);
 }

@@ -6,17 +6,19 @@ class GraphicScene {
     this.canvas = ncanvas;
 
     this.ctx = ncanvas.getContext('2d');
+    this.canvasWidth = 1900;
+    this.canvasHight = 900;
+    this.scale = 2;
     this.offset = new Point(0, 0);
     this.zOffset = 0;
-    this.scale = 1;
     this.pointSize = 5
     this.gridSize = 15;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
     this.lineBegins = false;
     this.tempPoint = null;
-    this.dragPos = null;
     this.isDragging = false;
+    this.dragPos = null;
     this.time;
     this.animationID;
 
@@ -24,10 +26,22 @@ class GraphicScene {
     this.cursorPoint.invisable();
   }
 
+  zoomIn() {
+    this.scale = 2;
+    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+  }
+
+  zoomOut() {
+    this.scale = 1;
+    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+  }
+
   getMousePosition(event) {
     let rect = this.canvas.getBoundingClientRect();
-    let x = event.clientX - rect.left - this.offset.x;
-    let y = event.clientY - rect.top - this.offset.y;
+    // let x = this.scale * (event.clientX - rect.left - this.offset.x);
+    // let y = this.scale * (event.clientY - rect.top - this.offset.y);
+    let x = (event.clientX - rect.left - this.offset.x);
+    let y = (event.clientY - rect.top - this.offset.y);
     return new Point(x, y);
   }
 
@@ -116,7 +130,7 @@ class GraphicScene {
       this.isDragging = false;
       this.dragPos = null;
       cancelAnimationFrame(this.animationID);
-      this.redraw(new Rectangle(-this.offset.x, -this.offset.y, 1900, 900), this.items.get(this.zOffset));
+      this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
     }
   }
 
@@ -130,6 +144,7 @@ class GraphicScene {
     } else if (button === 2) {
       this.deleteItem(pos, type);
     } else if (button === 1) {
+      // Было RealPosition
       this.dragCanvas(this.getMouseRealPosition(event), type);
     }
   }
@@ -138,13 +153,13 @@ class GraphicScene {
     //TODO Доработать или убрать
     if (this.isDragging === true) {
       let pos = this.getMouseRealPosition(event);
-
+      // Было RealPosition
       this.offset.subOffset( this.dragPos.subOffset(pos) );
       this.dragPos = pos;
     } else {
       let pos = this.getMousePosition(event);
-      let startX = Math.round((pos.x) / this.gridSize) * this.gridSize;
-      let startY = Math.round((pos.y) / this.gridSize) * this.gridSize;
+      let startX = Math.round((pos.x) / (this.gridSize * this.scale)) * (this.gridSize);
+      let startY = Math.round((pos.y) / (this.gridSize * this.scale)) * (this.gridSize);
 
       if (!this.cursorPoint.wasClicked(startX, startY)) {
         let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
@@ -159,8 +174,8 @@ class GraphicScene {
     //TODO искать минимальное расстояние среди всех точек
     let pos = this.getMousePosition(event);
     let currentFloor = this.items.get(this.zOffset)[0];
-    let startX = Math.round(pos.x / this.gridSize) * this.gridSize;
-    let startY = Math.round(pos.y / this.gridSize) * this.gridSize;
+    let startX = Math.round(pos.x / this.gridSize) * this.gridSize * this.scale;
+    let startY = Math.round(pos.y / this.gridSize) * this.gridSize * this.scale;
     let newX = startX;
     let newY = startY;
     let minDistance = Number.MAX_SAFE_INTEGER;
@@ -199,11 +214,12 @@ class GraphicScene {
     let dt = now - (this.time || now);
     this.time = now;
 
-    this.redraw(new Rectangle(-this.offset.x, -this.offset.y, 1900, 900), this.items.get(this.zOffset));
+    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
   }
 
   redraw(changesArea, currentFloor) {
     let realArea = Object.assign(new Rectangle(0, 0, 0, 0), changesArea);
+    realArea.scale(this.scale);
     realArea.offset(this.offset.x, this.offset.y);
 
     this.ctx.clearRect(realArea.x1,
@@ -221,7 +237,7 @@ class GraphicScene {
     for (let item of currentFloor[0]) {
       if ( item.redrawRequest(changesArea) ) {
         redrawnArea.expand(item.boundingRect);
-        item.redraw(this.ctx, this.offset);
+        item.redraw(this.ctx, this.offset, this.scale);
       }
     }
 
@@ -230,26 +246,29 @@ class GraphicScene {
     redrawnArea.expand(changesArea);
     for (let item of currentFloor[1]) {
       if (item.redrawRequest(redrawnArea) && !item.attached) {
-        item.redraw(this.ctx, this.offset);
+        item.redraw(this.ctx, this.offset, this.scale);
       }
     }
 
-    this.cursorPoint.redraw(this.ctx, this.offset);
+    this.cursorPoint.redraw(this.ctx, this.offset, this.scale);
   }
 
   //TODO сетка двух размеров - большая и маленькая
   drawGrid(changesArea) {
-    let startX = Math.round((changesArea.x1 - this.offset.x) / this.gridSize) * this.gridSize + this.offset.x;
-    let startY = Math.round((changesArea.y1 - this.offset.y) / this.gridSize) * this.gridSize + this.offset.y;
+    // TODO round или ceil
+    console.log("Area", changesArea)
+    let startX = (Math.round((changesArea.x1 - this.offset.x) / (this.gridSize * this.scale)) * (this.gridSize * this.scale) + this.offset.x);
+    let startY = (Math.round((changesArea.y1 - this.offset.y) / (this.gridSize * this.scale)) * (this.gridSize * this.scale) + this.offset.y);
+    console.log("Starts", startX, startY)
 
     this.ctx.strokeStyle = "#aaa";
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
-    for (let i = startY; i <= changesArea.y2; i += this.gridSize) {
+    for (let i = startY; i <= changesArea.y2; i += (this.gridSize) * this.scale) {
       this.ctx.moveTo(changesArea.x1, i);
       this.ctx.lineTo(changesArea.x2, i);
     }
-    for (let i = startX; i <= changesArea.x2; i += this.gridSize) {
+    for (let i = startX; i <= changesArea.x2; i += (this.gridSize) * this.scale) {
       this.ctx.moveTo(i, changesArea.y1);
       this.ctx.lineTo(i, changesArea.y2);
     }

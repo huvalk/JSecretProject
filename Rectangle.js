@@ -47,6 +47,13 @@ class Rectangle {
     this.y1 += yOffset;
   }
 
+  scale(s) {
+    this.x2 *= s;
+    this.y2 *= s;
+    this.x1 *= s;
+    this.y1 *= s;
+  }
+
   expand(nRect) {
     if (!(nRect.x1 >= this.x1)) {
       this.x1 = nRect.x1;
