@@ -8,6 +8,7 @@ class GraphicScene {
     this.ctx = ncanvas.getContext('2d');
     this.canvasWidth = 1900;
     this.canvasHight = 900;
+    this.canvasWindow = new Rectangle(0, 0, this.canvasWidth, this.canvasHight)
     this.scale = 2;
     this.offset = new Point(0, 0);
     this.zOffset = 0;
@@ -26,15 +27,15 @@ class GraphicScene {
     this.cursorPoint.invisable();
   }
 
-  zoomIn() {
-    this.scale = 2;
+  zoomIn(s) {
+    this.scale *= s;
     this.offset.x -= this.canvasWidth / 4;
     this.offset.y -= this.canvasHight / 4;
     this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
   }
 
-  zoomOut() {
-    this.scale = 1;
+  zoomOut(s) {
+    this.scale /= s;
     this.offset.x += this.canvasWidth / 4;
     this.offset.y += this.canvasHight / 4;
     this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
@@ -238,7 +239,7 @@ class GraphicScene {
 
   redraw(changesArea, currentFloor) {
     let realArea = Object.assign(new Rectangle(0, 0, 0, 0), changesArea);
-    realArea.scale(this.scale);
+    realArea.mult(this.scale);
     realArea.offset(this.offset.x, this.offset.y);
 
     this.ctx.clearRect(realArea.x1,
