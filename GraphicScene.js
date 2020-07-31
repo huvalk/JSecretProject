@@ -6,10 +6,8 @@ class GraphicScene {
     this.canvas = ncanvas;
 
     this.ctx = ncanvas.getContext('2d');
-    this.canvasWidth = 1900;
-    this.canvasHight = 900;
-    this.canvasWindow = new Rectangle(0, 0, this.canvasWidth, this.canvasHight)
-    this.scale = 2;
+    this.canvasWindow = new Rectangle(0, 0, 1900, 900)
+    this.scale = 1;
     this.offset = new Point(0, 0);
     this.zOffset = 0;
     this.pointSize = 5
@@ -24,41 +22,24 @@ class GraphicScene {
     this.animationID;
 
     this.items.set(this.zOffset, [new Set(), new Set()]);
-    this.cursorPoint.invisable();
   }
 
   zoomIn(s) {
     this.scale *= s;
-    this.offset.x -= this.canvasWidth / 4;
-    this.offset.y -= this.canvasHight / 4;
-    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+    this.canvasWindow.divide(s);
+    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
   zoomOut(s) {
     this.scale /= s;
-    this.offset.x += this.canvasWidth / 4;
-    this.offset.y += this.canvasHight / 4;
-    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
-  }
-
-  rescale() {
-    if (this.scale === 1) {
-      this.scale = 2;
-      this.offset.x -= this.canvasWidth / 4;
-      this.offset.y -= this.canvasHight / 4;
-    } else {
-      this.scale = 1;
-      this.offset.x += this.canvasWidth / 4;
-      this.offset.y += this.canvasHight / 4;
-    }
-
-    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+    this.canvasWindow.mult(s);
+    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
   getMousePosition(event) {
     let rect = this.canvas.getBoundingClientRect();
-    let x = (event.clientX - rect.left - this.offset.x);
-    let y = (event.clientY - rect.top - this.offset.y);
+    let x = event.clientX - rect.left - this.offset.x;
+    let y = event.clientY - rect.top - this.offset.y;
     return new Point(x, y);
   }
 
@@ -85,13 +66,11 @@ class GraphicScene {
   addItem(pos, type) {
     if (type === "mousedown") {
       this.tempPoint = this.findPoint(pos);
-
       if (this.tempPoint === null || this.tempPoint.isAttached()) {
         this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
         this.items.get(this.zOffset)[1].add(this.tempPoint);
         this.tempPoint.redraw(this.ctx, this.offset);
       }
-
       this.lineBegins = true;
     } else if (type === "mouseup") {
       if (this.lineBegins && !this.tempPoint.wasClicked(pos.x, pos.y)) {
@@ -142,12 +121,14 @@ class GraphicScene {
     if (type === "mousedown") {
       this.isDragging = true;
       this.dragPos = pos;
+      this.cursorPoint.visable = false;
       this.step();
     } else if (type === "mouseup") {
       this.isDragging = false;
       this.dragPos = null;
+      this.cursorPoint.visable = true;;
       cancelAnimationFrame(this.animationID);
-      this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+      this.redraw(this.canvasWindow, this.items.get(this.zOffset));
     }
   }
 
@@ -170,8 +151,9 @@ class GraphicScene {
     //TODO Доработать или убрать
     if (this.isDragging === true) {
       let pos = this.getMouseRealPosition(event);
-      // Было RealPosition
+
       this.offset.subOffset( this.dragPos.subOffset(pos) );
+      this.canvasWindow.move(-this.offset.x / this.scale, -this.offset.y / this.scale);
       this.dragPos = pos;
     } else {
       let pos = this.getMousePosition(event);
@@ -180,7 +162,6 @@ class GraphicScene {
 
       if (!this.cursorPoint.wasClicked(startX, startY)) {
         let changesArea = Object.assign(new Rectangle(0, 0, 0, 0), this.cursorPoint.boundingRect);
-        console.log(startX, startY)
 
         this.cursorPoint.drag(startX, startY);
         this.redraw(changesArea, this.items.get(this.zOffset));
@@ -234,7 +215,7 @@ class GraphicScene {
     let dt = now - (this.time || now);
     this.time = now;
 
-    this.redraw(new Rectangle(-this.offset.x / this.scale, -this.offset.y / this.scale, this.canvasWidth / this.scale, this.canvasHight / this.scale), this.items.get(this.zOffset));
+    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
   redraw(changesArea, currentFloor) {
@@ -270,7 +251,9 @@ class GraphicScene {
       }
     }
 
-    this.cursorPoint.redraw(this.ctx, this.offset, this.scale);
+    if (this.cursorPoint.visable === true) {
+      this.cursorPoint.redraw(this.ctx, this.offset, this.scale);
+    }
   }
 
   //TODO сетка двух размеров - большая и маленькая
