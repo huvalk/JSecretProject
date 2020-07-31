@@ -46,15 +46,11 @@ window.onload = function() {
     let delta = event.deltaY || event.detail || event.wheelDelta;
 
     if (delta < 0) {
-      if (scene.scale === 1) {
+      if (scene.scale < 16) {
         scene.zoomIn(2);
-      } else if (scene.scale === 2) {
-        scene.zoomIn(4);
       }
     } else if (delta > 0) {
-      if (scene.scale === 8) {
-        scene.zoomOut(4);
-      } else if (scene.scale === 2) {
+      if (scene.scale > 1) {
         scene.zoomOut(2);
       }
     }
@@ -63,7 +59,12 @@ window.onload = function() {
     if (event.code === "ControlLeft") {
       scene.mouseMove = scene.lineAttachment;
     } else if (event.code === "ShiftLeft") {
-
+      // console.log("Debug")
+      // console.log("window", scene.canvasWindow)
+      console.log("offset", scene.offset)
+      console.log("cursor", scene.cursorPoint)
+      // console.log(scene.items.get(0))
+      // console.log("zoom", scene.canvasWindow.width, scene.offset.x, scene.scale)
     }
   });
   document.addEventListener('keyup', function(event) {

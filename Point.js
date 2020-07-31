@@ -35,5 +35,6 @@ class Point {
   divide(d) {
     this.x /= d;
     this.y /= d;
+    return this;
   }
 }

@@ -47,7 +47,7 @@ class GraphicPoint extends GraphicItem {
 
     ctx.lineWidth = this.border;
     ctx.beginPath();
-    ctx.arc((this.x * scale + offset.x), (this.y * scale + offset.y), this.radius, 0, Math.PI*2, true);
+    ctx.arc((this.x * scale - offset.x), (this.y * scale - offset.y), this.radius, 0, Math.PI*2, true);
     ctx.stroke();
     ctx.fill();
   }

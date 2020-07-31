@@ -92,8 +92,8 @@ class GraphicLine extends GraphicItem {
     ctx.lineCap  = 'round';
 
     ctx.beginPath();
-    ctx.moveTo((this.firstPoint.x * scale + offset.x), (this.firstPoint.y * scale + offset.y));
-    ctx.lineTo((this.secondPoint.x * scale + offset.x), (this.secondPoint.y * scale + offset.y));
+    ctx.moveTo((this.firstPoint.x * scale - offset.x), (this.firstPoint.y * scale - offset.y));
+    ctx.lineTo((this.secondPoint.x * scale - offset.x), (this.secondPoint.y * scale - offset.y));
     ctx.stroke();
   }
 
