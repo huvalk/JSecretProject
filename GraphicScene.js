@@ -269,7 +269,6 @@ class GraphicScene {
     let realArea = Object.assign(new Rectangle(0, 0, 0, 0), changesArea);
     realArea.mult(this.scale);
     realArea.offset(-this.offset.x, -this.offset.y);
-    console.log(realArea)
     this.ctx.clearRect(realArea.x1,
                        realArea.y1,
                        realArea.x2 - realArea.x1,
