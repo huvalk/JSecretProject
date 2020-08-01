@@ -108,7 +108,7 @@ class GraphicScene {
           this.lineBegins = false;
           this.redraw(this.tempPoint.boundingRect, currentFloor);
           this.tempPoint = null;
-        } else if (this.scale < 4) {
+        } else if (this.scale < 2) {
           currentFloor[1].delete(this.tempPoint);
           this.tempPoint = null;
         }
@@ -276,7 +276,7 @@ class GraphicScene {
 
     //TODO Оптимизировать, без расширения нее работает, но захватывает большую область
     // отрисовать верхний слой
-    if (this.scale >= 4) {
+    if (this.scale >= 2) {
       redrawnArea.expand(changesArea);
       for (let item of currentFloor[1]) {
         if (item.redrawRequest(redrawnArea)) {

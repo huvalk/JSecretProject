@@ -47,16 +47,10 @@ window.onload = function() {
 
     if (delta < 0) {
       if (scene.scale < 16) {
-        if (scene.scale === 1) {
-          scene.zoomIn();
-        }
         scene.zoomIn();
       }
     } else if (delta > 0) {
       if (scene.scale > 1) {
-        if (scene.scale === 4) {
-          scene.zoomOut();
-        }
         scene.zoomOut();
       }
     }
