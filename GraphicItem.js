@@ -3,7 +3,7 @@
 class GraphicItem {
   constructor() {
     this.type;
-    this.visable = true;
+    this.visable;
     this.boundingRect;
   }
 
@@ -24,9 +24,13 @@ class GraphicItem {
   }
 
   redrawRequest(changesArea) {
-    return (this.visable && !((this.boundingRect.x1 < changesArea.x1 && this.boundingRect.x2 < changesArea.x1) ||
-            (this.boundingRect.x1 > changesArea.x2 && this.boundingRect.x2 > changesArea.x2) ||
-            (this.boundingRect.y1 < changesArea.y1 && this.boundingRect.y2 < changesArea.y1) ||
-            (this.boundingRect.y1 > changesArea.y2 && this.boundingRect.y2 > changesArea.y2)));
+    return (this.visable && !((this.boundingRect.x1 < changesArea.x1 &&
+                               this.boundingRect.x2 < changesArea.x1) ||
+                              (this.boundingRect.x1 > changesArea.x2 &&
+                               this.boundingRect.x2 > changesArea.x2) ||
+                              (this.boundingRect.y1 < changesArea.y1 &&
+                               this.boundingRect.y2 < changesArea.y1) ||
+                              (this.boundingRect.y1 > changesArea.y2 &&
+                               this.boundingRect.y2 > changesArea.y2)));
   }
 }

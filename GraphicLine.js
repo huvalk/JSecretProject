@@ -9,11 +9,11 @@ class GraphicLine extends GraphicItem {
     this.width = 3;
     this.visable = true;
     this.type = "GraphicLine";
-    // Нужно добавить небольшую зону вокруг краев?
     this.boundingRect = new Rectangle(this.firstPoint.x,
-      this.firstPoint.y,
-      this.secondPoint.x - this.firstPoint.x,
-      this.secondPoint.y - this.firstPoint.y, this.width);
+                                      this.firstPoint.y,
+                                      this.secondPoint.x - this.firstPoint.x,
+                                      this.secondPoint.y - this.firstPoint.y,
+                                      this.width);
   }
 
   pointInArea(x, y) {
@@ -48,43 +48,8 @@ class GraphicLine extends GraphicItem {
       }
 
       return false;
-      //TODO Можно оптимизировать
-      //TODO заменить на формулу расстояния?
-      // let pxLow = (x - accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
-      // let pxHigh = (x + accuracy - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
-      // let py = (y - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
-      //
-      // if (py >= 0 && py <= 1) {
-      //   if (pxHigh < pxLow) {
-      //     [pxHigh, pxLow] = [pxLow, pxHigh];
-      //     if (py <= pxHigh && py >= pxLow) {
-      //       return true;
-      //     }
-      //   }
-      // }
-      //
-      // let pyLow = (y - accuracy - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
-      // let pyHigh = (y + accuracy - this.secondPoint.y) / (this.firstPoint.y - this.secondPoint.y);
-      // let px = (x - this.secondPoint.x) / (this.firstPoint.x - this.secondPoint.x);
-      //
-      // if (px >= 0 && px <= 1) {
-      //   if (pyHigh < pyLow) {
-      //     [pyHigh, pyLow] = [pyLow, pyHigh];
-      //     if (px <= pyHigh && px >= pyLow) {
-      //       return true;
-      //     }
-      //   }
-      // }
-      // return false;
     }
   }
-
-  // drag(nx, ny) {
-  //   this.firstPoint.move(nx, ny);
-  //   this.secondPoint.move(nx, ny);
-  //   this.boundingRect.move(this.x - this.border - this.radius,
-  //     this.y - this.border - this.radius);
-  // }
 
   redraw(ctx, offset, scale) {
     ctx.strokeStyle = "#FF4040";
@@ -92,24 +57,24 @@ class GraphicLine extends GraphicItem {
     ctx.lineCap  = 'round';
 
     ctx.beginPath();
-    ctx.moveTo((this.firstPoint.x * scale - offset.x), (this.firstPoint.y * scale - offset.y));
-    ctx.lineTo((this.secondPoint.x * scale - offset.x), (this.secondPoint.y * scale - offset.y));
+    ctx.moveTo((this.firstPoint.x * scale - offset.x),
+               (this.firstPoint.y * scale - offset.y));
+    ctx.lineTo((this.secondPoint.x * scale - offset.x),
+               (this.secondPoint.y * scale - offset.y));
     ctx.stroke();
   }
 
   getYByX(x) {
-    return new Point(x, ((x - this.firstPoint.x) * (this.firstPoint.y - this.secondPoint.y) /
-            (this.firstPoint.x - this.secondPoint.x) + this.firstPoint.y));
+    return new Point(x, ((x - this.firstPoint.x) *
+                         (this.firstPoint.y - this.secondPoint.y) /
+                         (this.firstPoint.x - this.secondPoint.x) +
+                         this.firstPoint.y));
   }
 
   getXByY(y) {
-    return new Point(((y - this.firstPoint.y) * (this.firstPoint.x - this.secondPoint.x) /
-            (this.firstPoint.y - this.secondPoint.y) + this.firstPoint.x), y);
+    return new Point(((y - this.firstPoint.y) *
+                     (this.firstPoint.x - this.secondPoint.x) /
+                     (this.firstPoint.y - this.secondPoint.y) +
+                     this.firstPoint.x), y);
   }
-
-  // Убрал, потому что линия больше не содержит точек
-  // freePoints() {
-  //   this.firstPoint.free();
-  //   this.secondPoint.free();
-  // }
 }

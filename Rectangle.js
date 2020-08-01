@@ -2,13 +2,6 @@
 
 class Rectangle {
   constructor(nx, ny, nw, nh, accuracy = 0) {
-    //TODO зпдавать точки, а не ширину
-    // if (nx === undefined ||
-    //   ny === undefined ||
-    //   nw === undefined ||
-    //   nh === undefined) {
-    //   this.defined = false;
-    // }
     if (nw >= 0) {
       this.width = nw;
       this.x1 = nx - accuracy;
