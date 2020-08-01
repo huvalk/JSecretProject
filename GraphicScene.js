@@ -9,11 +9,11 @@ class GraphicScene {
     this.canvasWidth = 1900;
     this.canvasHeight = 900;
     this.canvasWindow = new Rectangle(0, 0, this.canvasWidth, this.canvasHeight);
-    this.scale = 1;
-    this.offset = new Point(100, 100);
+    this.scale = 4;
+    this.offset = new Point(0, 0);
     this.zOffset = 0;
-    this.pointSize = 4;
-    this.gridSize = 10;
+    this.pointSize = 5;
+    this.gridSize = 8;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
     this.lineBegins = false;
@@ -24,6 +24,12 @@ class GraphicScene {
     this.animationID;
 
     this.items.set(this.zOffset, [new Set(), new Set()]);
+  }
+
+  reset() {
+    this.lineBegins = false;
+    this.isDragging = false;
+    this.tempPoint = null;
   }
 
   getMousePosition(event) {
@@ -83,23 +89,29 @@ class GraphicScene {
   addItem(pos, type) {
     if (type === "mousedown") {
       this.tempPoint = this.findPoint(pos);
-      if (this.tempPoint === null || this.tempPoint.isAttached()) {
+      if (this.tempPoint === null) {
         this.tempPoint = new GraphicPoint(pos.x, pos.y, this.pointSize);
         this.items.get(this.zOffset)[1].add(this.tempPoint);
         this.tempPoint.redraw(this.ctx, this.offset);
       }
       this.lineBegins = true;
     } else if (type === "mouseup") {
-      if (this.lineBegins && !this.tempPoint.wasClicked(pos.x, pos.y)) {
-        let nLine = new GraphicLine(this.tempPoint.pos(), new Point(pos.x, pos.y));
+      if (this.lineBegins) {
         let currentFloor = this.items.get(this.zOffset);
 
-        currentFloor[1].delete(this.tempPoint);
-        currentFloor[1].delete(this.findPoint(pos));
-        currentFloor[0].add(nLine);
-        this.lineBegins = false;
-        this.redraw(this.tempPoint.boundingRect, currentFloor);
-        this.tempPoint = null;
+        if ( !this.tempPoint.wasClicked(pos.x, pos.y) ) {
+          let nLine = new GraphicLine(this.tempPoint.pos(), new Point(pos.x, pos.y));
+
+          currentFloor[1].delete(this.tempPoint);
+          currentFloor[1].delete(this.findPoint(pos));
+          currentFloor[0].add(nLine);
+          this.lineBegins = false;
+          this.redraw(this.tempPoint.boundingRect, currentFloor);
+          this.tempPoint = null;
+        } else if (this.scale < 4) {
+          currentFloor[1].delete(this.tempPoint);
+          this.tempPoint = null;
+        }
       }
     }
   }
@@ -248,7 +260,9 @@ class GraphicScene {
 
     // Отрисовать задний слой
     //TODO Перенести на задний слой
-    this.drawGrid(realArea);
+    if (this.scale >= 2) {
+      this.drawGrid(realArea);
+    }
 
     // Отрисовать центральный
     let redrawnArea = new Rectangle();
@@ -262,15 +276,17 @@ class GraphicScene {
 
     //TODO Оптимизировать, без расширения нее работает, но захватывает большую область
     // отрисовать верхний слой
-    redrawnArea.expand(changesArea);
-    for (let item of currentFloor[1]) {
-      if (item.redrawRequest(redrawnArea) && !item.attached) {
-        item.redraw(this.ctx, this.offset, this.scale);
+    if (this.scale >= 4) {
+      redrawnArea.expand(changesArea);
+      for (let item of currentFloor[1]) {
+        if (item.redrawRequest(redrawnArea)) {
+          item.redraw(this.ctx, this.offset, this.scale);
+        }
       }
-    }
 
-    if (this.cursorPoint.visable === true) {
-      this.cursorPoint.redraw(this.ctx, this.offset, this.scale);
+      if (this.cursorPoint.visable === true) {
+        this.cursorPoint.redraw(this.ctx, this.offset, this.scale);
+      }
     }
   }
 
@@ -295,10 +311,10 @@ class GraphicScene {
     this.ctx.stroke();
 
     // Центр для отладки
-    this.ctx.beginPath();
-    this.ctx.arc((475), (225), 5, 0, Math.PI*2, true);
-    this.ctx.stroke();
-    this.ctx.fill();
+    // this.ctx.beginPath();
+    // this.ctx.arc((475), (225), 5, 0, Math.PI*2, true);
+    // this.ctx.stroke();
+    // this.ctx.fill();
   }
 
   mouseClick(event) {

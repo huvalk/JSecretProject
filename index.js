@@ -47,13 +47,22 @@ window.onload = function() {
 
     if (delta < 0) {
       if (scene.scale < 16) {
+        if (scene.scale === 1) {
+          scene.zoomIn();
+        }
         scene.zoomIn();
       }
     } else if (delta > 0) {
       if (scene.scale > 1) {
+        if (scene.scale === 4) {
+          scene.zoomOut();
+        }
         scene.zoomOut();
       }
     }
+  });
+  canvas.addEventListener('mouseleave', function(event) {
+    scene.reset();
   });
   document.addEventListener('keydown', function(event) {
     if (event.code === "ControlLeft") {
@@ -61,9 +70,9 @@ window.onload = function() {
     } else if (event.code === "ShiftLeft") {
       // console.log("Debug")
       // console.log("window", scene.canvasWindow)
-      console.log("offset", scene.offset)
-      console.log("cursor", scene.cursorPoint)
-      // console.log(scene.items.get(0))
+      // console.log("offset", scene.offset)
+      // console.log("cursor", scene.cursorPoint)
+      console.log(scene.items.get(0))
       // console.log("zoom", scene.canvasWindow.width, scene.offset.x, scene.scale)
     }
   });
