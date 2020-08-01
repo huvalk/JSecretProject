@@ -47,11 +47,11 @@ window.onload = function() {
 
     if (delta < 0) {
       if (scene.scale < 16) {
-        scene.zoomIn(2);
+        scene.zoomIn();
       }
     } else if (delta > 0) {
       if (scene.scale > 1) {
-        scene.zoomOut(2);
+        scene.zoomOut();
       }
     }
   });

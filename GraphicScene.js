@@ -10,10 +10,10 @@ class GraphicScene {
     this.canvasHeight = 900;
     this.canvasWindow = new Rectangle(0, 0, this.canvasWidth, this.canvasHeight);
     this.scale = 1;
-    this.offset = new Point(150, 150);
+    this.offset = new Point(100, 100);
     this.zOffset = 0;
-    this.pointSize = 5
-    this.gridSize = 15;
+    this.pointSize = 4;
+    this.gridSize = 10;
     this.cursorPoint = new GraphicPoint(0, 0, this.pointSize);
     this.items = new Map();
     this.lineBegins = false;
@@ -24,26 +24,6 @@ class GraphicScene {
     this.animationID;
 
     this.items.set(this.zOffset, [new Set(), new Set()]);
-  }
-
-  zoomIn() {
-    // Зум двухкратный
-    this.scale *= 2;
-    this.offset.x = this.offset.x * 2 + this.canvasWidth / 2;
-    this.offset.y = this.offset.y * 2 + this.canvasHeight / 2;
-    this.canvasWindow.divide(2);
-    this.canvasWindow.move(this.offset.x / this.scale, this.offset.y / this.scale);
-    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
-  }
-
-  zoomOut() {
-    // Зум двухкратный
-    this.scale /= 2;
-    this.offset.x = this.offset.x / 2 - this.canvasWidth / 4;
-    this.offset.y = this.offset.y / 2 - this.canvasHeight / 4;
-    this.canvasWindow.mult(2);
-    this.canvasWindow.move(this.offset.x / this.scale, this.offset.y / this.scale);
-    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
   getMousePosition(event) {
@@ -60,6 +40,34 @@ class GraphicScene {
     return new Point(x, y);
   }
 
+  zoomIn() {
+    // Зум двухкратный
+    let pos = this.getMouseRealPosition(event);
+
+    this.scale *= 2;
+    this.offset.x -= this.canvasWidth / 2 - pos.x;
+    this.offset.y -= this.canvasHeight / 2 - pos.y;
+    this.offset.x = this.offset.x * 2 + this.canvasWidth / 2;
+    this.offset.y = this.offset.y * 2 + this.canvasHeight / 2;
+    this.canvasWindow.divide(2);
+    this.canvasWindow.move(this.offset.x / this.scale, this.offset.y / this.scale);
+    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
+  }
+
+  zoomOut() {
+    // Зум двухкратный
+    let pos = this.getMouseRealPosition(event);
+
+    this.scale /= 2;
+    this.offset.x += this.canvasWidth / 2 - pos.x;
+    this.offset.y += this.canvasHeight / 2 - pos.y;
+    this.offset.x = this.offset.x / 2 - this.canvasWidth / 4;
+    this.offset.y = this.offset.y / 2 - this.canvasHeight / 4;
+    this.canvasWindow.mult(2);
+    this.canvasWindow.move(this.offset.x / this.scale, this.offset.y / this.scale);
+    this.redraw(this.canvasWindow, this.items.get(this.zOffset));
+  }
+
   findPoint(pos) {
     let currentFloor = this.items.get(this.zOffset);
 
@@ -69,7 +77,6 @@ class GraphicScene {
         return item;
       }
     }
-
     return null;
   }
 
@@ -86,7 +93,7 @@ class GraphicScene {
       if (this.lineBegins && !this.tempPoint.wasClicked(pos.x, pos.y)) {
         let nLine = new GraphicLine(this.tempPoint.pos(), new Point(pos.x, pos.y));
         let currentFloor = this.items.get(this.zOffset);
-        //TODO проверить
+
         currentFloor[1].delete(this.tempPoint);
         currentFloor[1].delete(this.findPoint(pos));
         currentFloor[0].add(nLine);
@@ -208,8 +215,6 @@ class GraphicScene {
           newY = pointCrossY.y;
           minDistance = distanceCrossY;
         }
-
-
       }
     }
 
@@ -290,10 +295,10 @@ class GraphicScene {
     this.ctx.stroke();
 
     // Центр для отладки
-    // this.ctx.beginPath();
-    // this.ctx.arc((950), (450), 5, 0, Math.PI*2, true);
-    // this.ctx.stroke();
-    // this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc((475), (225), 5, 0, Math.PI*2, true);
+    this.ctx.stroke();
+    this.ctx.fill();
   }
 
   mouseClick(event) {
