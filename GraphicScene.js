@@ -217,19 +217,24 @@ class GraphicScene {
   }
 
   lineAttachment(event) {
-    //TODO искать минимальное расстояние среди всех точек
-    let currentFloor = this.items.get(this.zOffset)[0];
     let pos = this.getMousePosition(event);
     let startX = Math.round((pos.x) / (this.gridSize * this.scale)) *
                             (this.gridSize);
     let startY = Math.round((pos.y) / (this.gridSize * this.scale)) *
                             (this.gridSize);
+
+    if (this.cursorPoint.wasClicked(startX, startY)) {
+      return;
+    }
+
+    let currentFloor = this.items.get(this.zOffset)[0];
     let newX = startX;
     let newY = startY;
     let minDistance = Number.MAX_SAFE_INTEGER;
+    pos.divide(this.scale);
 
     for (let item of currentFloor) {
-      if (item.pointInArea(pos.x, pos.y, 0)) {
+      if (item.pointInArea(startX, startY, 0)) {
         let pointCrossX = item.getXByY(startY);
         let pointCrossY = item.getYByX(startX);
         let distanceCrossX = pos.distanceTo(pointCrossX);
@@ -276,7 +281,7 @@ class GraphicScene {
 
     // Отрисовать задний слой
     //TODO Перенести на задний слой
-    if (this.scale >= 2) {
+    if (this.scale >= 4) {
       this.drawGrid(realArea);
     }
 
