@@ -40,6 +40,7 @@ class GraphicScene {
     this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
+  // +
   getMousePosition(event) {
     let rect = this.canvas.getBoundingClientRect();
     let x = event.clientX - rect.left + this.offset.x;
@@ -47,6 +48,7 @@ class GraphicScene {
     return new Point(x, y);
   }
 
+  // +
   getMouseRealPosition(event) {
     let rect = this.canvas.getBoundingClientRect();
     let x = event.clientX - rect.left;
@@ -80,6 +82,7 @@ class GraphicScene {
     this.redraw(this.canvasWindow, this.items.get(this.zOffset));
   }
 
+  // +
   findPoint(pos) {
     let currentFloor = this.items.get(this.zOffset);
 
@@ -92,6 +95,7 @@ class GraphicScene {
     return null;
   }
 
+  // +
   addItem(pos, type) {
     if (type === "mousedown") {
       this.tempPoint = this.findPoint(pos);
@@ -115,6 +119,7 @@ class GraphicScene {
           this.lineBegins = false;
           this.redraw(this.tempPoint.boundingRect, currentFloor);
           this.tempPoint = null;
+          // -
         } else if (this.scale < 1) {
           currentFloor[1].delete(this.tempPoint);
           this.tempPoint = null;
@@ -123,6 +128,7 @@ class GraphicScene {
     }
   }
 
+  // +
   deleteItem(pos, type) {
     if (event.type === "mouseup") {
       let currentFloor = this.items.get(this.zOffset);
@@ -170,7 +176,7 @@ class GraphicScene {
     } else if (type === "mouseup") {
       this.isDragging = false;
       this.dragPos = null;
-      this.cursorPoint.visable = true;;
+      this.cursorPoint.visable = true;
       cancelAnimationFrame(this.animationID);
       this.redraw(this.canvasWindow, this.items.get(this.zOffset));
     }
@@ -191,6 +197,7 @@ class GraphicScene {
     }
   }
 
+  // +
   cursorShadow(event) {
     if (this.isDragging === true) {
       let pos = this.getMouseRealPosition(event);
@@ -216,6 +223,7 @@ class GraphicScene {
     }
   }
 
+  // +
   lineAttachment(event) {
     let pos = this.getMousePosition(event);
     let startX = Math.round((pos.x) / (this.gridSize * this.scale)) *
@@ -261,6 +269,7 @@ class GraphicScene {
     this.redraw(changesArea, this.items.get(this.zOffset));
   }
 
+  // +
   step = () => {
     this.animationID = window.requestAnimationFrame(this.step);
     let now = new Date().getTime();
